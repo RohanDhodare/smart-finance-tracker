@@ -1,0 +1,6 @@
+ALL IMPORTANT THINGS THAT I'll do in this project will be listed down below:
+
+DOCKER CMD to create postgresql:
+docker run --name finance-tracker-db -e POSTGRES_USER=rohan781 -e POSTGRES_PASSWORD=rohan781password -e POSTGRES_DB=finance_tracker -p 5432:5432 -d postgres:15.18
+
+password authentication failed error in spring boot
