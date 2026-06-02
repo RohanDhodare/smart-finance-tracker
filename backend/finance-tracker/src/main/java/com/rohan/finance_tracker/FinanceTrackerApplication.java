@@ -9,7 +9,9 @@ import java.util.TimeZone;
 public class FinanceTrackerApplication {
 
 	public static void main(String[] args) {
-		System.out.println("JVM TZ = " + TimeZone.getDefault().getID());
+//		Used for logging to see what is the timezone set
+//		System.out.println("JVM TZ = " + TimeZone.getDefault().getID());
+
 		SpringApplication.run(FinanceTrackerApplication.class, args);
 	}
 
