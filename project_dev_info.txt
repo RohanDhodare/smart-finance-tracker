@@ -5,3 +5,78 @@ docker run --name finance-tracker-db -e POSTGRES_USER=rohan781 -e POSTGRES_PASSW
 
 DOCKER CMD used to avoid timezone diff between db and intellij
 docker run --name finance-tracker-db -e POSTGRES_USER=rohan781 -e POSTGRES_PASSWORD=rohan781password -e POSTGRES_DB=finance_tracker -e TZ=Asia/Kolkata -p 5433:5432 -d postgres:15.18
+
+
+5433 = your machine port (i.e. localhost:5433)
+5432 = PostgreSQL port inside container (i.e. default port of PostgreSQL)
+
+2 STEP CMD TO GO INTO POSTGRE :
+docker exec -it finance-tracker-db bash
+here exec is execute cmd inside running container 
+-i interactive 
+-t is terminal mode 
+finance-tracker-db - container name
+bash - cmd to execute inside container
+you will see something like below:
+root@a1b2c3:/#
+
+psql -U rohan781 -d finance_tracker
+psql :- postgresql cli client
+-U :- username 
+-d <name> :- database name 
+
+
+CLI CMD TO DIRECTLY LOGIN TO POSTGRE SQL:- 
+docker exec -it finance-tracker-db psql -U rohan781 -d finance_tracker
+
+For connecting pdAdmin (GUI of postgresql) use below steps:
+download pgAdmin
+go to servers -> right click -> register -> server -> pop-up appears -> give any name you want -> 
+go to connection tab -> hostname to be entered (i.e. localhost or remote ip) -> port -> maintenance db name(name of your db preferred)
+-> username -> password -> save
+
+=====================================
+
+Creation of Auth package:
+
+auth controller for register & login will be created
+
+auth controller will access methods from authService class 
+
+authServices will do all the logic of encrypting and validation stuff
+
+
+Creation of user package:
+
+user class will have id, name, username and password
+
+userRepostiory will be an interface implementing JPARepository which will have all the methods to interact with DB.
+
+authServices methods will then call userRepository method to interact with db and do operations
+
+==================================================
+
+UNDERSTANDINGS:
+
+contoller methods are not called by you but are called by spring boot when that particular annotation/mapping is been hit.
+Flow is Client sends post request to controller - it controller stores the request details as DTO(Data Transfer Object) of SignupRequest
+This DTO is validated and if passed then sets the values.
+controller then calls the server layer method saveUser() which creates a new user sets it's required params using DTO and 
+then saves it to DB using repository.
+
+NEVER USE DTO Directly to store details in DB - cause it leads to tight coupling if we want to add new fields to User/DTO in future then it might fail and crash the app 
+
+throw is used to throw exception manually and used inside method or block of code. Can throw only 1 exception at a time.
+
+throws is used in method declaration and indicates that method can throw 1 or more exception and tell caller of method 
+to handle the exception. 
+
+
+======================================================
+
+Update of project so far:
+
+created user and authcontroller
+Done with validation and uniquess of username check 
+
+need to do exception handling for controllers and then also modify the controller methods to return ResponseEntity instead of String
