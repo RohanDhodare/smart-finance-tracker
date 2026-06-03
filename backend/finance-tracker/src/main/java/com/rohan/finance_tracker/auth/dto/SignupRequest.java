@@ -6,13 +6,15 @@ import jakarta.validation.constraints.Size;
 public class SignupRequest {
 
     @NotBlank(message = "Name shouldn't be blank")
+    @Size(min = 2, message = "Name should be at least of length 2")
     private String name;
 
-    @NotBlank(message = "username shouldn't be blank")
+    @NotBlank(message = "Username shouldn't be blank")
+    @Size(min = 5, message = "Username should be at least of length 5")
     private String username;
 
-    @NotBlank
-    @Size(min = 5, message = "minimum required length for password is 3")
+    @NotBlank(message = "Password shouldn't be blank")
+    @Size(min = 8, message = "Minimum required length for password is 8")
     private String password;
 
     public String getUsername() {

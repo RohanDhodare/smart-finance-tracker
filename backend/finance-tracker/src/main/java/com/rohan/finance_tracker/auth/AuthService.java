@@ -1,6 +1,9 @@
 package com.rohan.finance_tracker.auth;
 
+import com.rohan.finance_tracker.auth.dto.LoginRequest;
 import com.rohan.finance_tracker.auth.dto.SignupRequest;
+import com.rohan.finance_tracker.exception.InvalidCredsException;
+import com.rohan.finance_tracker.exception.UsernameAlreadyExistsException;
 import com.rohan.finance_tracker.user.User;
 import com.rohan.finance_tracker.user.UserRepository;
 import org.springframework.stereotype.Service;
@@ -15,11 +18,10 @@ public class AuthService {
         this.userRepository = userRepository;
     }
 
-    public void saveUser(SignupRequest userDetails){
+    public User saveUser(SignupRequest userDetails){
         User user = new User();
-
-        if(userRepository.existsByUsername(user.getUsername())){
-            throw new RuntimeException("Username already exists. Please use different one");
+        if(userRepository.existsByUsername(userDetails.getUsername())){
+            throw new UsernameAlreadyExistsException("Username already exists. Please use different one");
         }
         else{
             user.setName(userDetails.getName());
@@ -27,5 +29,20 @@ public class AuthService {
             user.setPassword(userDetails.getPassword());
             userRepository.save(user);
         }
+        return user;
+    }
+
+    public User loginUser(LoginRequest loginDetails){
+        User user;
+        if(!userRepository.existsByUsername(loginDetails.getUsername())){
+            throw new InvalidCredsException("Invalid username");
+        }
+        else{
+            user = userRepository.findByUsername(loginDetails.getUsername());
+            if(!loginDetails.getPassword().equals(user.getPassword())){
+                throw new InvalidCredsException("Invalid password");
+            }
+        }
+        return user;
     }
 }
