@@ -1,6 +1,7 @@
 package com.rohan.finance_tracker.auth;
 
 import com.rohan.finance_tracker.auth.dto.LoginRequest;
+import com.rohan.finance_tracker.auth.dto.LoginResponse;
 import com.rohan.finance_tracker.auth.dto.SignupRequest;
 import com.rohan.finance_tracker.user.User;
 import jakarta.validation.Valid;
@@ -33,10 +34,15 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
     }
 
-    @GetMapping("/login")
-    public ResponseEntity<User> loginUser(@Valid @RequestBody LoginRequest loginDetails){
-        User loggedinUser = authService.loginUser(loginDetails);
-        return ResponseEntity.status(HttpStatus.OK).body(loggedinUser);
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponse> loginUser(@Valid @RequestBody LoginRequest loginDetails){
+        String token = authService.loginUser(loginDetails);
+        return ResponseEntity.status(HttpStatus.OK).body(new LoginResponse(token));
+    }
+
+    @GetMapping("/hello-world")
+    public String helloWorldController(){
+        return "Hello World";
     }
 
 }
