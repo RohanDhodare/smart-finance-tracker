@@ -4,10 +4,7 @@ import com.rohan.finance_tracker.exception.ExcelParsingException;
 import com.rohan.finance_tracker.parser.dto.ExcelRow;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.ss.util.CellAddress;
-import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.hibernate.jdbc.Work;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -18,7 +15,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 @Service
@@ -26,8 +22,16 @@ public class ExcelParserService {
 
     private static final Logger logger = LoggerFactory.getLogger(ExcelParserService.class);
 
+    private static final int SR_NO = 1;
+    private static final int VALUE_DATE = 2;
+    private static final int TRANSACTION_DATE = 3;
+    private static final int CHEQUE_NUMBER = 4;
+    private static final int REMARKS = 5;
+    private static final int WITHDRAWAL = 6;
+    private static final int DEPOSIT = 7;
+    private static final int BALANCE = 8;
+
     public List<ExcelRow> parseExcel(MultipartFile file) {
-        String fileName = file.getOriginalFilename();
         List<ExcelRow> excelRows = new ArrayList<>();
 
         try(Workbook workbook = createWorkbook(file)){
@@ -35,11 +39,10 @@ public class ExcelParserService {
 //            we created a Sheet and got the first sheet from our file/workbook
             Sheet spreadsheet = workbook.getSheetAt(0);
 
-//            created row iterator
-            Iterator<Row> rowIterator = spreadsheet.rowIterator();
-
 //            Hardcoded Header Row index here
             int headerRowIndex = 12;
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
             for(int rowIndex = headerRowIndex + 1; rowIndex <= spreadsheet.getLastRowNum(); rowIndex++){
                 Row row = spreadsheet.getRow(rowIndex);
@@ -47,21 +50,29 @@ public class ExcelParserService {
                     continue;
                 }
 
-                Cell srNoCell = row.getCell(1);
+                Cell srNoCell = row.getCell(SR_NO);
                 if (srNoCell == null || srNoCell.getCellType() == CellType.BLANK ||
                         srNoCell.toString().trim().isEmpty()) {
                     continue;
                 }
 
+                String srNo = srNoCell.toString().trim();
+                try{
+                    Integer.parseInt(srNo);
+                }
+                catch(NumberFormatException e){
+                    break; // here we are breaking when footer or legends is reached
+                }
+
                 ExcelRow excelRow = new ExcelRow(
-                        Integer.valueOf(row.getCell(1).toString().trim()),
-                        LocalDate.parse( row.getCell(2).toString().trim(), DateTimeFormatter.ofPattern("dd/MM/yyyy") ),
-                        LocalDate.parse( row.getCell(3).toString().trim(), DateTimeFormatter.ofPattern("dd/MM/yyyy") ),
-                        (row.getCell(4) == null) ? "" : row.getCell(4).toString().trim(),
-                        row.getCell(5).toString(),
-                        new BigDecimal(row.getCell(6).toString().trim()),
-                        new BigDecimal(row.getCell(7).toString().trim()),
-                        new BigDecimal(row.getCell(8).toString().trim())
+                        Integer.valueOf(srNo),
+                        LocalDate.parse( row.getCell(VALUE_DATE).toString().trim(), formatter),
+                        LocalDate.parse( row.getCell(TRANSACTION_DATE).toString().trim(), formatter),
+                        (row.getCell(CHEQUE_NUMBER) == null) ? "" : row.getCell(CHEQUE_NUMBER).toString().trim(),
+                        row.getCell(REMARKS).toString(),
+                        new BigDecimal(row.getCell(WITHDRAWAL).toString().trim()),
+                        new BigDecimal(row.getCell(DEPOSIT).toString().trim()),
+                        new BigDecimal(row.getCell(BALANCE).toString().trim())
                 );
                     excelRows.add(excelRow);
             }
