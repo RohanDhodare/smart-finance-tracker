@@ -1,5 +1,6 @@
-package com.rohan.finance_tracker.transaction;
+package com.rohan.finance_tracker.transaction.service;
 
+import com.rohan.finance_tracker.transaction.enums.CategoryType;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;

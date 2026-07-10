@@ -2,25 +2,19 @@ package com.rohan.finance_tracker.transaction.mapper;
 
 import com.rohan.finance_tracker.parser.dto.ExcelRow;
 import com.rohan.finance_tracker.exception.InvalidTransactionAmountException;
-import com.rohan.finance_tracker.transaction.MerchantCategorizer;
-import com.rohan.finance_tracker.transaction.Transaction;
-import com.rohan.finance_tracker.transaction.TransactionType;
-import com.rohan.finance_tracker.transaction.service.MerchantExtractor;
+import com.rohan.finance_tracker.transaction.enums.CategoryType;
+import com.rohan.finance_tracker.transaction.entity.Transaction;
+import com.rohan.finance_tracker.transaction.enums.TransactionType;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 
 @Service
 public class TransactionMapper {
-    private final MerchantExtractor merchantExtractor;
-    private final MerchantCategorizer merchantCategorizer;
 
-    public TransactionMapper(MerchantExtractor merchantExtractor, MerchantCategorizer merchantCategorizer){
-        this.merchantExtractor = merchantExtractor;
-        this.merchantCategorizer = merchantCategorizer;
-    }
-
-    public Transaction toTransaction(ExcelRow excelRow){
+    public Transaction toTransaction(ExcelRow excelRow,
+                                     String merchantName,
+                                     CategoryType categoryType){
 
         Transaction transaction = new Transaction();
 
@@ -41,12 +35,8 @@ public class TransactionMapper {
         transaction.setRemarks(excelRow.transactionRemarks());
         transaction.setTransactionDate(excelRow.transactionDate());
 
-
-        String merchantName = merchantExtractor.extractMerchantName(excelRow.transactionRemarks())
-                .trim().toUpperCase();
-
         transaction.setMerchantName(merchantName);
-        transaction.setCategoryType(merchantCategorizer.determineCategory(merchantName));
+        transaction.setCategoryType(categoryType);
 
         return transaction;
     }

@@ -1,5 +1,7 @@
-package com.rohan.finance_tracker.transaction;
+package com.rohan.finance_tracker.transaction.entity;
 
+import com.rohan.finance_tracker.transaction.enums.CategoryType;
+import com.rohan.finance_tracker.transaction.enums.TransactionType;
 import com.rohan.finance_tracker.user.User;
 import jakarta.persistence.*;
 
@@ -102,5 +104,20 @@ public class Transaction {
 
     public void setCategoryType(CategoryType categoryType) {
         this.categoryType = categoryType;
+    }
+
+    @Override
+    public String toString() {
+        return "Transaction{" +
+                "id=" + id +
+                ", amount=" + amount +
+                ", transactionType=" + transactionType +
+                ", merchantName='" + merchantName + '\'' +
+                ", remarks='" + remarks + '\'' +
+                ", transactionDate=" + transactionDate +
+                ", balance=" + balance +
+                ", user=" + user +
+                ", categoryType=" + categoryType +
+                '}';
     }
 }
