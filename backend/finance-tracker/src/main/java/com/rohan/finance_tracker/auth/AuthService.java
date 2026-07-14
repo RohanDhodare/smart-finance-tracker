@@ -8,8 +8,10 @@ import com.rohan.finance_tracker.exception.UsernameAlreadyExistsException;
 import com.rohan.finance_tracker.jwt.JwtService;
 import com.rohan.finance_tracker.user.User;
 import com.rohan.finance_tracker.user.UserRepository;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class AuthService {
@@ -42,21 +44,17 @@ public class AuthService {
     }
 
     public String loginUser(LoginRequest loginDetails){
-        User user;
-        if(!userRepository.existsByUsername(loginDetails.getUsername())){
-            throw new InvalidCredsException("Invalid username");
-        }
-        else{
-            user = userRepository.findByUsername(loginDetails.getUsername());
-//            below code was used for basic comparison
+        User user = userRepository.findByUsername(loginDetails.getUsername()).orElseThrow( () -> new UsernameNotFoundException("Invalid username"));
+
+            //            below code was used for basic comparison
 //            if(!loginDetails.getPassword().equals(user.getPassword())){
 //                throw new InvalidCredsException("Invalid password");
 //            }
 
-            if(!securityConfig.passwordEncoder().matches(loginDetails.getPassword(), user.getPassword())){
+            if(!securityConfig.passwordEncoder().matches(loginDetails.getPassword(), user.getPassword() )){
                 throw new InvalidCredsException("Invalid Password");
             }
-        }
+
         return jwtService.generateToken(user.getUsername());
     }
 }

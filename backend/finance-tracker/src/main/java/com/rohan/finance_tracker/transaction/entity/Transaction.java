@@ -17,6 +17,7 @@ public class Transaction {
 
     private BigDecimal amount;
 
+    @Enumerated(EnumType.STRING)
     private TransactionType transactionType;
 
     private String merchantName;
@@ -113,9 +114,7 @@ public class Transaction {
                 ", amount=" + amount +
                 ", transactionType=" + transactionType +
                 ", merchantName='" + merchantName + '\'' +
-                ", remarks='" + remarks + '\'' +
                 ", transactionDate=" + transactionDate +
-                ", balance=" + balance +
                 ", user=" + user +
                 ", categoryType=" + categoryType +
                 '}';

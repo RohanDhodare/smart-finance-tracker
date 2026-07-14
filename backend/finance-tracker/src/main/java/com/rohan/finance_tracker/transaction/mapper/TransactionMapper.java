@@ -5,6 +5,7 @@ import com.rohan.finance_tracker.exception.InvalidTransactionAmountException;
 import com.rohan.finance_tracker.transaction.enums.CategoryType;
 import com.rohan.finance_tracker.transaction.entity.Transaction;
 import com.rohan.finance_tracker.transaction.enums.TransactionType;
+import com.rohan.finance_tracker.user.User;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -14,7 +15,8 @@ public class TransactionMapper {
 
     public Transaction toTransaction(ExcelRow excelRow,
                                      String merchantName,
-                                     CategoryType categoryType){
+                                     CategoryType categoryType,
+                                     User user){
 
         Transaction transaction = new Transaction();
 
@@ -37,6 +39,8 @@ public class TransactionMapper {
 
         transaction.setMerchantName(merchantName);
         transaction.setCategoryType(categoryType);
+
+        transaction.setUser(user);
 
         return transaction;
     }
